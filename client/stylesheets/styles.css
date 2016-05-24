@@ -1,0 +1,13 @@
+.theme-dark {
+    background: #6c6c6c;
+    color: white;
+}
+
+input, button {
+    color: black;
+}
+
+
+.hidden {
+    display: none;
+}

@@ -4,11 +4,17 @@ var mongoose = require("mongoose");
 // Movie Schema
 var movieSchema = mongoose.Schema({
     title: String,
-    year: Number,
-    genre: String,
-    rating: Number,
-    votes: Number,
+    year: String,
+    genre: [String],
+    rating: String,
+    votes: String,
     plot: String,
+    release_date: String,
+    language: String,
+    imdb_id: String,
+    director: [String],
+    actors: [String],
+    writers: [String],
     img_url: String
 }); 
 

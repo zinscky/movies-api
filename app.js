@@ -17,6 +17,7 @@ app.use(morgan("dev"));
 
 // Static Resources
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "client")));
 
 
 // Body Parser

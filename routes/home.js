@@ -1,9 +1,10 @@
 var express = require("express");
 var router = express.Router();
+var path = require("path");
 
 // Get Homepage
 router.get("/", function(req, res) {
-    res.send("Use rest endpoints");
+    res.sendFile(path.join(__dirname, "../client/index.html"));
 });
 
 module.exports = router;

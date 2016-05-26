@@ -12,12 +12,15 @@ mongoose.connect("mongodb://localhost/movie-app");
 // Init App
 var app = express();
 
+// Set JSON pretty printing
+app.set('json spaces', 2);
+
 // Morgan Logger Middleware
 app.use(morgan("dev"));
 
 // Static Resources
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.static(path.join(__dirname, "client")));
+//app.use(express.static(path.join(__dirname, "client")));
 
 
 // Body Parser
@@ -26,12 +29,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 
 app.use("/", home);
-app.use("/api/movies", movies);
+app.use("/api/v1/movies", movies);
 
 
 app.listen(3000, function() {
     console.log("http://localhost:3000");
 })
-
-
-

@@ -1,13 +1,12 @@
 var mongoose = require("mongoose");
 
-
 // Movie Schema
 var movieSchema = mongoose.Schema({
     title: String,
-    year: String,
+    year: Number,
     genre: [String],
-    rating: String,
-    votes: String,
+    rating: Number,
+    votes: Number,
     plot: String,
     release_date: String,
     language: String,
@@ -16,10 +15,9 @@ var movieSchema = mongoose.Schema({
     actors: [String],
     writers: [String],
     img_url: String
-}); 
+});
 
 var Movie = module.exports = mongoose.model("movies", movieSchema);
-
 
 // Add a Movie
 module.exports.addMovie = function(movie, callback) {
@@ -33,5 +31,5 @@ module.exports.getMovieById = function(id, callback) {
 
 // Get Movies By Year
 module.exports.getMoviesByYear = function(year, callback, limit) {
-    Movie.find({ year: year }, callback).limit(limit);
+    Movie.find({ year: year }, callback).limit(limit).sort("-releade_date");
 }

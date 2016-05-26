@@ -4,26 +4,28 @@
         <title>Movies</title>
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-        
+
         <!-- Custom css for this page -->
         <link rel="stylesheet" href="stylesheets/styles.css">
-        
-        
+
+
     </head>
     <body class="theme-dark">
         <div class="container">
             <p>This page is used to collect movie details from imdb and send it to server database for storage.</p>
-        
+
             <p>Enter a movie name to get details</p>
             <input type="text" id="title">
             <button id="myBtn">Find Movie</button>
             <button class="hidden" id="btnUpload">Upload Details</button>
             <p id="demo"></p>
             <p id="para"></p>
-            
+
             <div class="hidden" id="movie-details">
                 <table>
-                
+
+
+
                     <tr>
                         <td><strong>Title:</strong></td>
                         <td id="movie_title"></td>
@@ -40,26 +42,26 @@
                         <td><strong>Poster:</strong></td>
                         <td id="Poster"><img src="" id="img_url" class="img-responsive"></td>
                     </tr>
-                
-                
+
+
                 </table>
             </div>
-            
+
             <div id="msg-box">
-                
-                <p id="server-msg"></p>    
+
+                <p id="server-msg"></p>
             </div>
-            
-            
-            
-            
+
+
+
+
         </div>
-        
-        
+
+
 
 <script>
-    
-    
+
+
     var obj;
     document.getElementById("myBtn").onclick = displayDate;
 
@@ -82,7 +84,7 @@
                 if(obj.Response === "False") {
                     document.getElementById("msg-box").className = "alert alert-danger";
                     document.getElementById("server-msg").innerHTML = obj.Error;
-                    
+
                     document.getElementById("movie-details").className = "hidden";
                     document.getElementById("btnUpload").className = "hidden";
                 }
@@ -95,18 +97,18 @@
                     document.getElementById("movie-details").className = "";
                     document.getElementById("btnUpload").className = "";
                     document.getElementById("msg-box").className = "hidden";
-                    
+
                     document.getElementById("btnUpload").disabled = false;
                 }
-       
+
             }
-        };  
+        };
         xhttp.open("GET", url, true);
         xhttp.send();
     }
-    
+
     document.getElementById("btnUpload").onclick = sendObjToServer;
-    
+
 function sendObjToServer() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -116,16 +118,16 @@ function sendObjToServer() {
             document.getElementById("msg-box").className = "";
             document.getElementById("server-msg").innerHTML = res_obj.message;
             document.getElementById("btnUpload").disabled = true;
-            
+
         }
-    };  
+    };
     xhttp.open("POST", "/api/movies", true);
     xhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
     xhttp.send(JSON.stringify(obj));
 }
 
 </script>
-        
+
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <!-- Latest compiled and minified JavaScript -->

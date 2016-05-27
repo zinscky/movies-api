@@ -10,7 +10,7 @@ var movieSchema = mongoose.Schema({
     plot: String,
     release_date: String,
     language: String,
-    imdb_id: String,
+    imdb_id: {type: String, unique: true},
     director: [String],
     actors: [String],
     writers: [String],
@@ -29,7 +29,21 @@ module.exports.getMovieById = function(id, callback) {
     Movie.findById(id, callback);
 }
 
-// Get Movies By Year
-module.exports.getMoviesByYear = function(year, callback, limit) {
-    Movie.find({ year: year }, callback).limit(limit).sort("-releade_date");
+// Get Movies By Year Rating Title 
+module.exports.getMovies = function(year1, year2, rating1, rating2, callback, limit, offset) {
+    year1 = parseInt(year1);
+    rating1 = parseInt(rating1);
+    rating2 = parseInt(rating2);
+    limit = parseInt(limit);
+    offset = parseInt(offset);
+    
+    
+    Movie
+        .find({
+            year: { $gt: year1-1, $lt: year2+1 },
+            rating: { $gt: rating1-0.1, $lt: rating2+0.1 }
+        }, callback)
+        .limit(limit)
+        .skip(offset)
+        .sort({release_date: -1});
 }

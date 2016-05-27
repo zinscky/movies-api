@@ -28,7 +28,7 @@ var Movie = require("../models/movie");
 // Get a movie by Id
 router.get("/:_id", function(req, res) {
     Movie.getMovieById(req.params._id, function(err, result) {
-        if(err) handleError(err, res);
+        if(err) return handleError(err, res);
 
         res.json(result);
     });
@@ -37,12 +37,49 @@ router.get("/:_id", function(req, res) {
 // POST - /api/v1/movies/
 // Add a Movie
 router.post("/", function(req, res) {
-    newMovie = fillMovieObject(req.body);
+    var newMovie = fillMovieObject(req.body);
     console.log(newMovie);
-    Movie.addMovie(newMovie, function(err, result) {
-        if(err) handleError(err, res);
-        res.json({message: "Database Updated"});
+    
+    Movie.findOne({imdb_id: newMovie.imdb_id}, function(err, result) {
+      if(err) return handleError(err, res);
+      if(result) {
+        res.status("409"); //Conflict since movie already is in the database
+        res.json({
+          response: false,
+          errors: ["Movie already exists in the database."]
+        });
+      } else { // Add the movie to the database
+        Movie.addMovie(newMovie, function(err, result) {
+          if(err) return handleError(err, res);
+          res.status("201"); // Created. Created a new document in the database
+          res.json({
+            response: true,
+            errors: []
+        });
     });
+      }
+    });
+    
+    
+});
+
+// Middleware to check querystring
+// Should come after POST - api/v1/movies since
+// we are checking for querystring in the same endpoint but 
+// on GET request.
+router.use("/", function(req, res, next) {
+  if(Object.keys(req.query).length !== 0) {
+    next();
+  } else {
+    res.status("400"); // Bad request since client didnt provie querystring
+    res.json({
+      response: false,
+      errors: [
+        "No query parameters specified."
+        ]
+    });
+  }
+  
 });
 
 // GET - /api/v1/movies?y={year}&p={pagination}&o={offset}
@@ -55,31 +92,38 @@ router.get("/", function(req, res) {
 
   console.log("year: " + year + " pagination: " + pagination + " offset: " + offset);
 
+  // Querystring Validation
   if(!validator.isYear(year)) errors.push("Incorrect year format.");
   if(!validator.isInteger(pagination)) errors.push("Pagination must be a positive integer.");
   if(!validator.isInteger(offset)) errors.push("Offset must be a positive integer.");
 
+  // ===================================================
+  // TODO
   // Check if total records is less than offset
+  // Part of pagination
+  // ===================================================
 
 
   // If there are validation errors then send response
   // as false and and array of all the errors.
-
   console.log("errors length: " + errors.length);
   if(errors.length > 0) {
     console.log("errors : " + errors);
+    res.status("400"); // Bad request since query validation failed
     res.json({
       response: false,
       errors: errors
     });
   } else {
     Movie.getMoviesByYear(parseInt(year), function(err, result) {
-      if(err) handleError(err, res);
-        if(result) {
+      if(err) return handleError(err, res);
+        if(result.length > 0) {
+          res.status("200"); // Successful
           res.json(result);
         } else {
+          res.status("404"); // Not found. Since movie doesnt exist in database
           res.json({
-            respose: false,
+            response: false,
             errors: "No movies found."
           });
         }
@@ -97,7 +141,7 @@ function handleError(err, res) {
 
 // Private Function. To fill newMovie object with data from client
 function fillMovieObject(movie) {
-    newMovie = new Movie();
+    var newMovie = new Movie();
 
     movie.imdbVotes = movie.imdbVotes.replace(/\,/g, "");
 

@@ -23,9 +23,6 @@
 
             <div class="hidden" id="movie-details">
                 <table>
-
-
-
                     <tr>
                         <td><strong>Title:</strong></td>
                         <td id="movie_title"></td>
@@ -42,26 +39,14 @@
                         <td><strong>Poster:</strong></td>
                         <td id="Poster"><img src="" id="img_url" class="img-responsive"></td>
                     </tr>
-
-
                 </table>
             </div>
 
             <div id="msg-box">
-
                 <p id="server-msg"></p>
             </div>
-
-
-
-
         </div>
-
-
-
 <script>
-
-
     var obj;
     document.getElementById("myBtn").onclick = displayDate;
 
@@ -112,16 +97,16 @@
 function sendObjToServer() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
-        if (xhttp.readyState == 4 && xhttp.status == 200) {
+        if (xhttp.readyState == 4 && xhttp.status == 201 || xhttp.status == 409) {
             var json = xhttp.response;
             var res_obj = JSON.parse(json);
             document.getElementById("msg-box").className = "";
-            document.getElementById("server-msg").innerHTML = res_obj.message;
+            document.getElementById("server-msg").innerHTML = json;
             document.getElementById("btnUpload").disabled = true;
 
         }
     };
-    xhttp.open("POST", "/api/movies", true);
+    xhttp.open("POST", "/api/v1/movies", true);
     xhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
     xhttp.send(JSON.stringify(obj));
 }

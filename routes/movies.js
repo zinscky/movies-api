@@ -30,7 +30,17 @@ router.get("/:_id", function(req, res) {
     Movie.getMovieById(req.params._id, function(err, result) {
         if(err) return handleError(err, res);
 
-        res.json(result);
+        if(result) {
+          res.status(200); // Success
+          res.json(result);
+        } else {
+          res.status("404"); // Not Found. 
+          res.json({
+            response: false,
+            errors: ["Movie not found."]
+          });
+        }
+        
     });
 });
 

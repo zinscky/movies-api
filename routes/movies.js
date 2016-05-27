@@ -19,7 +19,7 @@
 //==============================================================
 
 var express = require("express");
-var validator = require("../utils/validator");
+var validator = require("validator");
 var router = express.Router();
 
 var Movie = require("../models/movie");
@@ -77,6 +77,7 @@ router.post("/", function(req, res) {
 // Should come after POST - api/v1/movies since
 // we are checking for querystring in the same endpoint but 
 // on GET request.
+/**
 router.use("/", function(req, res, next) {
   if(Object.keys(req.query).length !== 0) {
     next();
@@ -91,21 +92,42 @@ router.use("/", function(req, res, next) {
   }
   
 });
+*/
 
-// GET - /api/v1/movies?y={year}&p={pagination}&o={offset}
+// ================================================================================
+// No need for middleware to check is querystring is empty.
+// If querystring is empty then by default get all movies with 
+// default pagination = 10
+// default offset = 0
+// GET - /api/v1/movies?y1={year}&y2={year}&r1={}&r2={}&p={pagination}&o={offset}
 // Get Movies by year and set pagination + offset
+// =================================================================================
 router.get("/", function(req, res) {
-  var year = req.query.y;
+  var year1 = req.query.y1 || "1800";
+  var year2 = req.query.y2 || "2999";
+  var rating1 = req.query.r1 || "0";
+  var rating2 = req.query.r2 || "10";
   var pagination = req.query.p || "10";
   var offset = req.query.o || "0";
   var errors = [];
 
-  console.log("year: " + year + " pagination: " + pagination + " offset: " + offset);
+  console.log("year: " + year1 + ", " + year2 + " Rating: " + rating1 
+    + ", " + rating2 + " pagination: " + pagination + " offset: " + offset);
 
   // Querystring Validation
-  if(!validator.isYear(year)) errors.push("Incorrect year format.");
-  if(!validator.isInteger(pagination)) errors.push("Pagination must be a positive integer.");
-  if(!validator.isInteger(offset)) errors.push("Offset must be a positive integer.");
+  if(!validator.isInt(year1, {min: 1800}) && year1.length !== 4 
+    && !validator.isInt(year2, {min: 1800}) && year2.length !== 4) { 
+    errors.push("Incorrect year format.");
+  }
+  if(!validator.isInt(pagination, {min: 1})) {
+    errors.push("Pagination must be a positive integer > 0.");
+  }
+  if(!validator.isInt(offset, {min: 0})) {
+    errors.push("Offset must be a positive integer.");
+  }
+  if(!validator.isDecimal(rating1) && !validator.isDecimal(rating2)) {
+    errors.push("Ratings must be a decimal number.")
+  }
 
   // ===================================================
   // TODO
@@ -125,7 +147,11 @@ router.get("/", function(req, res) {
       errors: errors
     });
   } else {
-    Movie.getMoviesByYear(parseInt(year), function(err, result) {
+    
+    
+    
+    
+    Movie.getMovies(year1, year2, rating1, rating2, function(err, result) {
       if(err) return handleError(err, res);
         if(result.length > 0) {
           res.status("200"); // Successful
@@ -137,7 +163,7 @@ router.get("/", function(req, res) {
             errors: "No movies found."
           });
         }
-    }, parseInt(pagination));
+    }, pagination, offset);
   }
 });
 

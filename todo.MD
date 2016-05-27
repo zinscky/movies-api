@@ -9,6 +9,7 @@
 - [ ] Best practices for writing api in express-js
 - [x] Set status codes in respose headers
 - [ ] Design response json body with its own headers and errors payload
+- [ ] Use validator to validate ObjectID
 - [ ] Cross reference other collections - foreign key
 - [x] Validation
 - [ ] Search between years or votes or ratings

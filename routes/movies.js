@@ -12,7 +12,7 @@
 // 6. PUT - /api/v1/movies/:id
 //        - Modify movie details.
 //
-// TODO: Combine 3, 4 and 5 into GET - /api/v1/movies/search?title,rating,year
+// TODO: Combine 3, 4 and 5 into GET - /api/v1/movies?title,rating,year
 //
 // The default pagination is 10
 // The default offset is 0

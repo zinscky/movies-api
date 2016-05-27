@@ -19,7 +19,7 @@
 //==============================================================
 
 var express = require("express");
-var validator = require("validator");
+var validator = require("../utils/validator");
 var router = express.Router();
 
 var Movie = require("../models/movie");
@@ -49,6 +49,19 @@ router.get("/:_id", function(req, res) {
 router.post("/", function(req, res) {
     var newMovie = fillMovieObject(req.body);
     console.log(newMovie);
+    var errors = [];
+    errors = validator.validateMovie(newMovie);
+    
+    // Check if there are validation errors
+    if(errors.length > 0) {
+      console.log("errors : " + errors);
+    res.status("400"); // Bad request since form data validation failed
+    return res.json({
+      response: false,
+      errors: errors
+    });
+    }
+    
     
     Movie.findOne({imdb_id: newMovie.imdb_id}, function(err, result) {
       if(err) return handleError(err, res);
@@ -115,26 +128,13 @@ router.get("/", function(req, res) {
     + ", " + rating2 + " pagination: " + pagination + " offset: " + offset);
 
   // Querystring Validation
-  if(!validator.isInt(year1, {min: 1800}) && year1.length !== 4 
-    && !validator.isInt(year2, {min: 1800}) && year2.length !== 4) { 
-    errors.push("Incorrect year format.");
-  }
-  if(!validator.isInt(pagination, {min: 1})) {
-    errors.push("Pagination must be a positive integer > 0.");
-  }
-  if(!validator.isInt(offset, {min: 0})) {
-    errors.push("Offset must be a positive integer.");
-  }
-  if(!validator.isDecimal(rating1) && !validator.isDecimal(rating2)) {
-    errors.push("Ratings must be a decimal number.")
-  }
-
+  errors = validator.validateQueryString(year1, year2, rating1, rating2, pagination, offset);
+  
   // ===================================================
   // TODO
   // Check if total records is less than offset
   // Part of pagination
   // ===================================================
-
 
   // If there are validation errors then send response
   // as false and and array of all the errors.
@@ -142,15 +142,12 @@ router.get("/", function(req, res) {
   if(errors.length > 0) {
     console.log("errors : " + errors);
     res.status("400"); // Bad request since query validation failed
-    res.json({
+    return res.json({
       response: false,
       errors: errors
     });
-  } else {
-    
-    
-    
-    
+  } 
+   
     Movie.getMovies(year1, year2, rating1, rating2, function(err, result) {
       if(err) return handleError(err, res);
         if(result.length > 0) {
@@ -164,7 +161,16 @@ router.get("/", function(req, res) {
           });
         }
     }, pagination, offset);
-  }
+  
+});
+
+// 404 ERROR Route
+router.all("/", function(req, res) {
+  res.status("404");
+  res.json({
+    response: false,
+    errors: ["404: Resource Not Found."]
+  });
 });
 
 module.exports = router;
@@ -182,10 +188,10 @@ function fillMovieObject(movie) {
     movie.imdbVotes = movie.imdbVotes.replace(/\,/g, "");
 
     newMovie.title = movie.Title;
-    newMovie.year = parseInt(movie.Year);
+    newMovie.year = parseInt(movie.Year, 10);
     newMovie.genre = movie.Genre.split(",");
     newMovie.rating = parseFloat(movie.imdbRating);
-    newMovie.votes = parseInt(movie.imdbVotes);
+    newMovie.votes = parseInt(movie.imdbVotes, 10);
     newMovie.plot = movie.Plot;
     newMovie.release_date = movie.Released;
     newMovie.language = movie.Language;

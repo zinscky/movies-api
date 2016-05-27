@@ -12,7 +12,8 @@
 - [ ] Use validator to validate ObjectID
 - [ ] Cross reference other collections - foreign key
 - [x] Validation
-- [ ] Search between years or votes or ratings
+- [x] Search between years or votes or ratings
+- [ ] Add a 404 route for any route not defined
 - [ ] Authentication
 - [ ] Search mechanics
 - [ ] Documentation

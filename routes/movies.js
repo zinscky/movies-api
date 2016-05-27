@@ -7,10 +7,12 @@
 //        - Fetches movies according to the year.
 // 4. GET - /api/v1/movies?r_low={rating_low}&r_high={rating_high}&p={pagination}&o={offset}
 //        - Fetches movies based on ratings usually between low and high
-// 5. GET - /api/v1/movies?q={search_string}&pagination={}&offset={}
+// 5. GET - /api/v1/movies/search?q={search_string}&pagination={}&offset={}
 //        - Search for movie titles. Basic fuzzy search using mongoDB.
 // 6. PUT - /api/v1/movies/:id
 //        - Modify movie details.
+//
+// TODO: Combine 3, 4 and 5 into GET - /api/v1/movies/search?title,rating,year
 //
 // The default pagination is 10
 // The default offset is 0
